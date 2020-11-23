@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+//抽离的根组件
+import React from 'react'
 
-function App() {
+//导入路由模块
+import {BrowserRouter as Router,Redirect,Route} from 'react-router-dom'
+//导入组件
+import Home from './pages/Home'
+import CityList from './pages/CityList'
+
+//创建根组件
+const App = () =>{
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <div>
+        {/* 使用路由重定向将'/'定向到'home'路由 -----就是render-props模式 */}
+        <Route exact path="/" render={()=> <Redirect to="/home"/>} />
+        {/* 首页 */}
+        <Route path="/home" component={Home} />
+        {/* 城市列表页 */}
+        <Route path="/citylist" component={CityList} />
+      </div>
+    </Router>
+  )
 }
 
-export default App;
+//导出根组件
+export default App
