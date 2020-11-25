@@ -4,4 +4,18 @@ html,body{
 }
 *{
   box-sizing: border-box;
+  /* 解决轮播图手动滑动时一直报错问题 */ 
+}
+p,h3,ul{
+  margin:0
+}
+ul{
+  list-style: none;
+}
+a{
+  color:#333
+}
+/* 对地图页容器的设置 */
+body,html,#root,.App{
+  height:100%;
 }

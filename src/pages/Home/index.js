@@ -35,11 +35,20 @@ export default class Home extends React.Component {
         selected={this.state.selectedTab === item.path}
         onPress={() => {
           this.props.history.push(item.path)
-          this.setState({ selectedTab: item.path })
+          //this.setState({ selectedTab: item.path })
         }}
         >
         </TabBar.Item>)
       })
+  }
+  //路由跳转会触发Home组件的更新渲染,在更新时通过钩子函数拿到上次的路由,对比跳转的路由如果不同
+  //就将此路由赋值给this.state中的标记,再触发更新实现跳转路由对应tabbaritem高亮
+  componentDidUpdate(preProps){
+    if(this.props.location.pathname !== preProps.location.pathname){
+      this.setState({
+        selectedTab:this.props.location.pathname
+      })
+    }
   }
 
 

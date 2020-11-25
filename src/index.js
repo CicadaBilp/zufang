@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom'
 import 'antd-mobile/dist/antd-mobile.css'
 //图标库样式
 import './assets/fonts/iconfont.css'
+//react-virtualized的样式
+import 'react-virtualized/styles.css'
 //自己的全局样式
 import './index.css'
 import App from './App'
