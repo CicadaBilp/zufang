@@ -32,7 +32,6 @@ function handleList(list) {
     }
   })
   indexList = Object.keys(citysObject).sort()
-
   return { citysObject, indexList }
 }
 //处理列表每行的标题(将首字母转化一下返回)

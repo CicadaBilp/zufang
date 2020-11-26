@@ -91,7 +91,7 @@ export default class Index extends React.Component {
     ))
   }
   async componentDidMount() {
-    console.log(this);
+    //console.log(this);
     //在此调用方法获取轮播图数据
     this.getSwiper()
     //在此调用获取租房小组数据
@@ -100,6 +100,7 @@ export default class Index extends React.Component {
     this.getNews()
     // axios.get('http://api.map.baidu.com/location/ip?ak=OgyRyC1xxebF69omnXBMyjxMNsIN5LGD&coor=bd09ll')
     // .then((res)=>console.log(res))
+    //获取当前城市信息
     let {label} = await getCurrentCity()
     this.setState({
       city:label
