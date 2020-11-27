@@ -30,3 +30,7 @@ const getCurrentCity = () => {
 }
 
 export { getCurrentCity,getLocaCity,setLocaCity }
+//导入再导出读取的开发时期的url
+export {BASE_URL} from './url'
+//导入再导出设置了基础路径的axios
+export {Axios} from './api'

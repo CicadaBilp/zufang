@@ -1,12 +1,15 @@
 import React from 'react'
 
 import './index.scss'
+//导入module.css
 import styles from './index.module.css'
 //导入顶部栏组件
 import NavHeader from '../../components/NavHeader'
-//导入获取本地缓存中城市信息的组价
-import { getLocaCity } from '../../utils/locaCity'
-import axios from 'axios'
+//导入获取本地缓存中城市信息的组件
+import { getLocaCity,BASE_URL,Axios } from '../../utils/index'
+//导入ant-d mobile中的toast组件
+import {Toast} from 'antd-mobile'
+
 
 const BMap = window.BMap
 // 重置label实例的样式,因为已经把label内容设为需要的html结构,不需要原来的内容和样式
@@ -22,7 +25,9 @@ const labelStyle = {
 
 export default class Map extends React.Component {
   state = {
+    //是否展示小区房源列表
     isShowHouseList: false,
+    // 小区房源列表数据
     houseList: []
   }
 
@@ -30,7 +35,7 @@ export default class Map extends React.Component {
     this.initMap()
     //this.getHouseByArea()
   }
-  //初始化地图展示,获取缓存中的城市信息,解析显示地图
+  //初始化地图展示,获取缓存中的城市信息,解析显示城市地图
   initMap() {
     let { label, value } = getLocaCity()
     label = label + '市'
@@ -45,17 +50,24 @@ export default class Map extends React.Component {
       if (point) {
         map.centerAndZoom(point, 11);
         map.addControl(new BMap.NavigationControl());
-        map.addControl(new BMap.ScaleControl());
-
+        map.addControl(new BMap.ScaleControl());     
         this.renderOver(value)
       }
     },
-      label);
-
+      label)
+      map.addEventListener('movestart',()=>{
+        console.log('地图移动')
+        this.setState({
+          isShowHouseList:false
+        })
+      })
   }
   //给地图添加覆盖物的方法
   async renderOver(id) {
-    let res = await axios('http://localhost:8080/area/map', { params: { id } })
+    Toast.loading('',0, null,false)
+    let res = await Axios('/area/map', { params: { id } })
+    Toast.hide()
+    //console.log(res);
     let { type, nextZoom } = this.getTypeZoom()
     this.createOver(type, nextZoom, res)
   }
@@ -82,17 +94,18 @@ export default class Map extends React.Component {
   //根据type判断是哪种覆盖物,再调用对应的方法
   createOver(type, nextZoom, res) {
     if (type === 'rect') {
+      //说明是小区覆盖物,遍历res中的小区房源数组,调用添加覆盖物函数,为每个小区添加
       res.data.body.forEach(item => {
         this.createRect(item)
       })
     } else {
-      //说明是区或镇的覆盖物
+      //说明是区或镇的覆盖物,遍历res中的房源数组,调用添加圆形覆盖物函数,为每个区或镇添加覆盖物
       res.data.body.forEach(item => {
         this.createCircle(item, nextZoom)
       })
     }
   }
-  //生成圆形覆盖物的函数
+  //给区或镇添加圆形覆盖物的函数
   createCircle(item, nextZoom) {
     //从每个地点的房源数据中解构出经纬坐标,生成point实例,在后面生成覆盖物时用到
     let { coord: { longitude, latitude } } = item
@@ -120,6 +133,7 @@ export default class Map extends React.Component {
     label.setStyle(labelStyle);
     this.map.addOverlay(label);
   }
+  //给每个小区添加矩形覆盖物
   createRect(item) {
     //从每个地点的房源数据中解构出经纬坐标,生成point实例,在后面生成覆盖物时用到
     let { coord: { longitude, latitude } } = item
@@ -140,6 +154,9 @@ export default class Map extends React.Component {
    `)
     //给每个label绑定点击事件
     label.addEventListener('click', () => {
+      this.map.centerAndZoom(point,15)
+      //调用地图移动方法,将
+      this.map.panBy(0,-146)
       this.getCommunity(item.value)
       console.log(item.value);
     })
@@ -147,39 +164,45 @@ export default class Map extends React.Component {
     label.setStyle(labelStyle);
     this.map.addOverlay(label);
   }
-  //点击小区label,获取小区里的房源
+  //点击小区label,获取小区里的房源,展示为列表
   async getCommunity(id) {
-    let res = await axios('http://localhost:8080/houses', { params: { cityId: id } })
+    Toast.loading('',0, null,false)
+    let res = await Axios('/houses', { params: { cityId: id } })
+    Toast.hide()
     console.log(res);
     this.setState({
-      isShowHouseList: true
+      isShowHouseList: true,
+      houseList: res.data.body.list
     })
   }
   //渲染每间房的列表项
   renderHouseList() {
     return this.state.houseList.map(item => (
-      <div className={styles.house} >
+      <div className={styles.house} key={item.houseCode}>
         <div className={styles.imgWrap}>
           <img
             className={styles.img}
-            src={`http://localhost:8080${item.houseImg}`}
+            src={`${BASE_URL}${item.houseImg}`}
             alt=""
           />
         </div>
         <div className={styles.content}>
-    <h3 className={styles.title}>{item.title}</h3>
-          <div className={styles.desc}>个体大人的过一个月夫人夫人的</div>
+          <h3 className={styles.title}>{item.title}</h3>
+          <div className={styles.desc}> {item.desc} </div>
           <div>
-            <span
-
-              className={[styles.tag, styles.tag1].join(' ')}
-            >
-              近地铁
-                      </span>
-                    )
-                </div>
+            {
+              item.tags.map((item2,index) => {
+                let toggleClass = `tag${index > 2 ? index%2+1 : index+1}`
+                return (
+                  <span key={index} className={[styles.tag, styles[toggleClass]].join(' ')}>
+                  {item2}
+                </span>
+                )
+              })
+            }
+          </div>
           <div className={styles.price}>
-            <span className={styles.priceNum}>1500</span> 元/月
+            <span className={styles.priceNum}> {item.price} </span> 元/月
                 </div>
         </div>
       </div>
@@ -203,6 +226,7 @@ export default class Map extends React.Component {
             </a>
           </div>
           <div className={styles.houseItems}>
+            {/* 具体每间房的列表 */}
             {this.renderHouseList()}
           </div>
         </div>

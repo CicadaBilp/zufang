@@ -12,8 +12,10 @@ import nav1 from '../../assets/images/nav-1.png'
 import nav2 from '../../assets/images/nav-2.png'
 import nav3 from '../../assets/images/nav-3.png'
 import nav4 from '../../assets/images/nav-4.png'
-
-import {getCurrentCity} from '../../utils/index'
+//导入工具中的组件
+import {getCurrentCity,BASE_URL} from '../../utils/index'
+//导入搜索框组件
+import SearchHeader from '../../components/SearchHeader'
 
 
 
@@ -63,7 +65,7 @@ export default class Index extends React.Component {
         style={{ display: 'inline-block', width: '100%', height: this.state.imgHeight }}
       >
         <img
-          src={`http://localhost:8080${item.imgSrc}`}
+          src={`${BASE_URL}${item.imgSrc}`}
           alt=""
           style={{ width: '100%', verticalAlign: 'top' }}
           onLoad={() => {
@@ -79,7 +81,7 @@ export default class Index extends React.Component {
   renderNews() {
     return this.state.news.map(item => (
       <div className="news-item" key={item.id}>
-        <img src={`http://localhost:8080${item.imgSrc}`} alt="" />
+        <img src={`${BASE_URL}${item.imgSrc}`} alt="" />
         <Flex className="item-info" direction="column" justify="between" align="start">
           <p> {item.title} </p>
           <Flex justify="between" className="item-time">
@@ -117,19 +119,8 @@ export default class Index extends React.Component {
         第一次render时渲染内容为空,当数据加载完成后再次渲染会展示,之间该区域高度会变化,加div */}
         <div className="swiper">
           {/* 搜索栏 */}
-          <Flex className="search">
-            <Flex className="left">
-              <div className="path" onClick={()=>this.props.history.push('/citylist')}>
-                <span> {this.state.city}  </span>
-                <i className="iconfont icon-arrow"></i>
-              </div>
-              <div className="left-search" onClick={()=>this.props.history.push('/search')}>
-                <i className="iconfont icon-seach"></i>
-                <span>请输入小区或地址</span>
-              </div>
-            </Flex>
-            <i className="iconfont icon-map" onClick={()=>this.props.history.push('/map')}></i>
-          </Flex>
+          <SearchHeader cityName={this.state.city}></SearchHeader>
+          {/* 轮播图 */}
           {
             !this.state.swiperLoading && (<Carousel
               autoplay={true}
@@ -185,7 +176,7 @@ export default class Index extends React.Component {
                   <span>{item.desc}  </span>
                 </div>
                 <div>
-                  <img src={`http://localhost:8080${item.imgSrc}`} alt="" />
+                  <img src={`${BASE_URL}${item.imgSrc}`} alt="" />
                 </div>
               </Flex>
             )} />

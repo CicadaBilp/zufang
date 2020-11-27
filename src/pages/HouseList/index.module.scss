@@ -1,0 +1,19 @@
+.houseListHeader{
+  background-color: #f5f6f5;
+  padding-left:10px;
+  height:45px
+}
+.houseListSearch{
+  position: relative;
+  top:0;
+  padding-left: 0;
+  :global{
+    .am-flexbox{
+      height:30px;
+    }
+    .icon-map{
+      color:yellowgreen
+    }
+
+  }
+}

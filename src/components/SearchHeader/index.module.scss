@@ -1,0 +1,49 @@
+.search{
+  position: absolute;
+  top:20px;
+  z-index: 2;
+  padding:0 10px;
+  
+  width: 100%;
+}
+.left{
+  background-color: #fff;
+  flex:1;
+  margin:0 10px;
+  height:34px;
+  border-radius: 3px;
+  padding:5px 5px 5px 8px; 
+}
+.path{
+  :global{
+    span{
+      font-size: 14px;
+    } 
+    .icon-arrow{
+      font-size: 12px;
+    }
+  }
+}
+.leftSearch{
+  border-left: 1px solid #ccc;
+  margin-left:12px;
+  :global{
+    .icon-seach{
+      font-size: 15px;
+      color:#ccc;
+      margin:0 4px 0 12px;
+      vertical-align: middle;;
+    }
+    span{
+      font-size: 13px;
+      color:#ccc
+    }
+  }
+}
+
+:global{
+  .icon-map{
+    font-size: 25px;
+    color: #fff;
+  }
+}
