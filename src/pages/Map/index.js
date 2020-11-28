@@ -9,6 +9,8 @@ import NavHeader from '../../components/NavHeader'
 import { getLocaCity,BASE_URL,Axios } from '../../utils/index'
 //导入ant-d mobile中的toast组件
 import {Toast} from 'antd-mobile'
+//导入每间房的渲染组件
+import HouseItem from '../../components/HouseItem'
 
 
 const BMap = window.BMap
@@ -178,34 +180,12 @@ export default class Map extends React.Component {
   //渲染每间房的列表项
   renderHouseList() {
     return this.state.houseList.map(item => (
-      <div className={styles.house} key={item.houseCode}>
-        <div className={styles.imgWrap}>
-          <img
-            className={styles.img}
-            src={`${BASE_URL}${item.houseImg}`}
-            alt=""
-          />
-        </div>
-        <div className={styles.content}>
-          <h3 className={styles.title}>{item.title}</h3>
-          <div className={styles.desc}> {item.desc} </div>
-          <div>
-            {
-              item.tags.map((item2,index) => {
-                let toggleClass = `tag${index > 2 ? index%2+1 : index+1}`
-                return (
-                  <span key={index} className={[styles.tag, styles[toggleClass]].join(' ')}>
-                  {item2}
-                </span>
-                )
-              })
-            }
-          </div>
-          <div className={styles.price}>
-            <span className={styles.priceNum}> {item.price} </span> 元/月
-                </div>
-        </div>
-      </div>
+      <HouseItem {...item} 
+        key={item.houseCode} 
+        houseImg={`${BASE_URL}${item.houseImg}`}
+        click={()=>this.props.history.push('./details/')}
+      >
+      </HouseItem>
     ))
   }
 

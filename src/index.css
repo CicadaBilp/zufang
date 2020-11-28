@@ -6,7 +6,7 @@ html,body{
   box-sizing: border-box;
   /* 解决轮播图手动滑动时一直报错问题 */ 
 }
-p,h3,ul,h1{
+p,h3,ul,h1,dd{
   margin:0
 }
 ul{

@@ -1,3 +1,6 @@
+.houseList{
+  height:100%
+}
 .houseListHeader{
   background-color: #f5f6f5;
   padding-left:10px;
@@ -15,5 +18,10 @@
       color:yellowgreen
     }
 
+  }
+}
+:global{
+  .ReactVirtualized__List{
+    padding:0 10px
   }
 }
