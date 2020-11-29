@@ -183,7 +183,7 @@ export default class Map extends React.Component {
       <HouseItem {...item} 
         key={item.houseCode} 
         houseImg={`${BASE_URL}${item.houseImg}`}
-        click={()=>this.props.history.push('./details/')}
+        click={()=>this.props.history.push('/detail')}
       >
       </HouseItem>
     ))

@@ -11,6 +11,7 @@ p,h3,ul,h1,dd{
 }
 ul{
   list-style: none;
+  padding:0
 }
 a{
   color:#333
@@ -18,4 +19,7 @@ a{
 /* 对地图页容器的设置 */
 body,html,#root,.App{
   height:100%;
+}
+.hidden{
+  overflow: hidden;
 }

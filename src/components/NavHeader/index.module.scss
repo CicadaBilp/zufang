@@ -1,0 +1,9 @@
+.navbar{
+  margin-top: -45px;
+  background-color: #f5f6f5;
+  :global{
+    .icon-back,.am-navbar-title{
+      color:#333
+    } 
+  }
+}

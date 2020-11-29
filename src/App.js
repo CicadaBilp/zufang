@@ -7,6 +7,7 @@ import {BrowserRouter as Router,Redirect,Route} from 'react-router-dom'
 import Home from './pages/Home'
 import CityList from './pages/CityList'
 import Map from './pages/Map'
+import Detail from './pages/Detail'
 
 //创建根组件
 const App = () =>{
@@ -21,6 +22,8 @@ const App = () =>{
         <Route path="/map" component={Map} />
         {/* 城市列表页 */}
         <Route path="/citylist" component={CityList} />
+        {/* 城市列表页 */}
+        <Route path="/detail/:id" component={Detail} />
       </div>
     </Router>
   )

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import {Spring} from 'react-spring/renderprops'
 
 import FilterTitle from '../FilterTitle'
 import FilterPicker from '../FilterPicker'
@@ -28,9 +29,12 @@ export default class Filter extends Component {
       more: []
     }
   }
+  //点击标题触发函数
   //每个标题栏是否高亮和是否展示遮罩层,详细筛选框的方法(传递给子组件接收要修改的数据,由filter组件来修改)
   changeTitleSelected = (type) => {
-    console.log(type);
+    //点击标题后,给body加类名让其overfloow=hidden
+    this.Body.classList.add('hidden')
+    //console.log(type);
     //标题点击的处理函数中,先拿到state中的两个状态对象
     const {isTitleSelected,selectedValue} = this.state
     //要更新引用类型的状态需要新建对象
@@ -72,9 +76,11 @@ export default class Filter extends Component {
     }
     return newisTitleSelected
   }
-
+  //子组件中点击取消或点击遮罩层
   //取消filterpick和遮罩层的展示,取消时也要判断当前这个标题是否应该高亮(有没有选中值)
   cancel = (type) => {
+    //取消展示筛选组件时移除body的hidden类名
+    this.body.remove('hidden')
     //
     const {selectedValue,isTitleSelected} = this.state
     //拿到当前type的选中值数组
@@ -98,6 +104,8 @@ export default class Filter extends Component {
       ...this.state.selectedValue,
       [type]: value
     }
+
+
     //接口需要的查询条件对象
     const filters = {}
     //区域键
@@ -118,8 +126,6 @@ export default class Filter extends Component {
     filters.more = newSelected.more.join(',')
     //调用父组件传递的方法,将查询需要的对象传递过去
     this.props.Filters(filters)
-
-
 
 
     //save方法在点击确定按钮时调用,并传递来本次的type值和该类型选中的条件值数组,更新state中的这两个数据
@@ -190,20 +196,39 @@ export default class Filter extends Component {
     const defaultValue = selectedValue['more']
     return  <FilterMore data={data} cancel={this.cancel} save={this.save} type={openType} defaultValue={defaultValue}/>
   }
+  //遮罩层是否展示,并加上动画效果
+  renderMask(){
+    const {openType} = this.state
+    //把openType是否为more或''当做一个状态来控制传入Spring组件的透明度值,
+    //当状态为true时透明度为0,为false时透明度为1,这样Spring组件一直存在可以更新to的状态,旧to=>新to
+    //并且在renderprops传入的函数中判断opacity的值为0时直接返回null不渲染,可避免遮罩层透明度为0时再页面中干扰其他元素点击
+    const ishide =  openType==='more' || openType===''
+    return (
+      <Spring from={{opacity:0}} to={{opacity:ishide ? 0 : 1}}>
+        {props => {
+          if(props.opacity === 0){
+            return null
+          }
+          return (
+            <div style={props} className={styles.mask} onClick={this.cancel} />
+          )
+        }}
+      </Spring>
+    )
+  }
 
   componentDidMount() {
     this.getFilterData()
+    //在这获取到body元素保存起来,后面当弹出pick筛选框的时候给它加overfloow=hidden,
+    this.Body = document.body
   }
   render() {
 
     let { isTitleSelected, openType } = this.state
     return (
       <div className={styles.root}>
-        {/* 遮罩层 */}
-        
-        { 
-          (openType === 'area' || openType === 'mode' || openType === 'price' ) ? <div className={styles.mask} onClick={this.cancel} /> : null
-        }
+          {/* 遮罩层 */}
+        {this.renderMask()}
         <div className={styles.content}>
           {/* 标题栏 */}
           <FilterTitle isTitleSelected={isTitleSelected} click={this.changeTitleSelected} />
