@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.2.2",
     "antd-mobile": "^2.3.4",
     "axios": "^0.21.0",
+    "formik": "^2.2.5",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
@@ -16,7 +17,8 @@
     "react-scripts": "4.0.0",
     "react-spring": "^8.0.27",
     "react-virtualized": "^9.22.2",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "yup": "^0.31.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -62,64 +62,58 @@ export default class Detail extends React.Component {
 
     houseInfo: {
       // // 房屋图片
-       houseImg: [],
-      // // 标题
-      // title: '',
-      // // 标签
-      // tags: [],
-      // // 租金
-      // price: 0,
-      // // 房型
-      // roomType: '',
-      // // 房屋面积
-      // size: 89,
+      houseImg: [],
+      // 标题
+      title: '',
+      // 标签
+      tags: [],
+      // 租金
+      price: 0,
+      // 房型
+      roomType: '',
+      // 房屋面积
+      size: 89,
       // // 装修类型
       // renovation: '',
-      // // 朝向
-      // oriented: [],
-      // // 楼层
-      // floor: '',
-      // // 小区名称
-      // community: '',
-      // // // 地理位置
-      // coord: {
-      //   latitude: '',
-      //   longitude: ''
-      // },
-      // // 房屋配套
-      // supporting: [],
+      // 朝向
+      oriented: [],
+      // 楼层
+      floor: '',
+      // 小区名称
+      community: '',
+      // // 地理位置
+      coord: {
+        latitude: '',
+        longitude: ''
+      },
+      // 房屋配套
+      supporting: [],
       // // 房屋标识
       // houseCode: '',
-      // // 房屋描述
-      // description: ''
+      // 房屋描述
+      description: ''
     }
   }
 
   async componentDidMount() {
-    //   this.renderMap('天山星城', {
-    //     latitude: '31.219228',
-    //     longitude: '121.391768'
-    //   })
     let { id } = this.props.match.params
-    console.log(id);
+    //console.log(id);
     let res = await Axios(`/houses/${id}`)
-    // const {community, coord} = res.data.body
-    //this.renderMap(community, coord)
-     console.log(res);
-     //console.log(community, coord);
-    this.setState({
-      houseInfo:res.data.body,
-      isLoading:false
-    })
-    const {community, coord} = this.state.houseInfo
+    const { community, coord } = res.data.body
     this.renderMap(community, coord)
+    console.log(res);
+    //console.log(community, coord);
+    this.setState({
+      houseInfo: res.data.body,
+      isLoading: false
+    })
   }
 
   // 渲染轮播图结构
   renderSwipers() {
-    const {houseInfo: { houseImg }} = this.state
+    const { houseInfo: { houseImg } } = this.state
 
-    return houseImg.map((item,index) => (
+    return houseImg.map((item, index) => (
       <a
         key={index}
         href="http://itcast.cn"
@@ -132,7 +126,7 @@ export default class Detail extends React.Component {
         <img
           src={BASE_URL + item}
           alt=""
-          style={{ width: '100%', height:"100%",verticalAlign: 'top' }}
+          style={{ width: '100%', height: "100%", verticalAlign: 'top' }}
         />
       </a>
     ))
@@ -159,7 +153,7 @@ export default class Detail extends React.Component {
     map.addOverlay(label)
   }
   render() {
-    const { isLoading } = this.state
+    const { isLoading, houseInfo } = this.state
     return (
       <div className={styles.root}>
         <NavHeader
@@ -182,30 +176,37 @@ export default class Detail extends React.Component {
         {/* 房屋基础信息 */}
         <div className={styles.info}>
           <h3 className={styles.infoTitle}>
-            整租 · 精装修，拎包入住，配套齐Q，价格优惠
+            {houseInfo.title}
           </h3>
           <Flex className={styles.tags}>
             <Flex.Item>
-              <span className={[styles.tag, styles.tag1].join(' ')}>
-                随时看房
-              </span>
+              {
+                houseInfo.tags.map((item,index) => {
+                  let tagClass = index <= 2 ? `tag${index+1}` : `tag${index%2+1}`
+                  return (
+                    <span className={[styles.tag, styles[tagClass]].join(' ')} key={index}>
+                      {item}
+                    </span>
+                  )
+                })
+              }
             </Flex.Item>
           </Flex>
 
           <Flex className={styles.infoPrice}>
             <Flex.Item className={styles.infoPriceItem}>
               <div>
-                8500
+                {houseInfo.price}
                 <span className={styles.month}>/月</span>
               </div>
               <div>租金</div>
             </Flex.Item>
             <Flex.Item className={styles.infoPriceItem}>
-              <div>1室1厅1卫</div>
+            <div>{houseInfo.roomType}</div>
               <div>房型</div>
             </Flex.Item>
             <Flex.Item className={styles.infoPriceItem}>
-              <div>78平米</div>
+            <div>{houseInfo.size}平米</div>
               <div>面积</div>
             </Flex.Item>
           </Flex>
@@ -218,12 +219,12 @@ export default class Detail extends React.Component {
               </div>
               <div>
                 <span className={styles.title}>楼层：</span>
-                低楼层
+                {houseInfo.floor}
               </div>
             </Flex.Item>
             <Flex.Item>
               <div>
-                <span className={styles.title}>朝向：</span>南
+                <span className={styles.title}>朝向：</span>{houseInfo.oriented[0]}
               </div>
               <div>
                 <span className={styles.title}>类型：</span>普通住宅
@@ -236,27 +237,16 @@ export default class Detail extends React.Component {
         <div className={styles.map}>
           <div className={styles.mapTitle}>
             小区：
-            <span>天山星城</span>
+            <span>{houseInfo.community}</span>
           </div>
-          <div className={styles.mapContainer} id="map">
-            
-          </div>
+          <div className={styles.mapContainer} id="map"></div>
         </div>
 
         {/* 房屋配套 */}
         <div className={styles.about}>
           <div className={styles.houseTitle}>房屋配套</div>
           <HousePackage
-            list={[
-              '电视',
-              '冰箱',
-              '洗衣机',
-              '空调',
-              '热水器',
-              '沙发',
-              '衣柜',
-              '天然气'
-            ]}
+            list={houseInfo.supporting}
           />
           {/* <div className="title-empty">暂无数据</div> */}
         </div>
@@ -281,10 +271,7 @@ export default class Detail extends React.Component {
 
             <div className={styles.descText}>
               {/* {description || '暂无房屋描述'} */}
-              1.周边配套齐全，地铁四号线陶然亭站，交通便利，公交云集，距离北京南站、西站都很近距离。
-              2.小区规模大，配套全年，幼儿园，体育场，游泳馆，养老院，小学。
-              3.人车分流，环境优美。
-              4.精装两居室，居家生活方便，还有一个小书房，看房随时联系。
+             {houseInfo.description}
             </div>
           </div>
         </div>

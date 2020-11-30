@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {getLocaCity,setLocaCity} from './locaCity'
 
+
 const getCurrentCity = () => {
   //先从缓存中获取城市信息
   let currCity = getLocaCity()
@@ -34,3 +35,5 @@ export { getCurrentCity,getLocaCity,setLocaCity }
 export {BASE_URL} from './url'
 //导入再导出设置了基础路径的axios
 export {Axios} from './api'
+//导出读写登录token的方法
+export {setToken,getToken,isLogin,removeToken} from './token'
