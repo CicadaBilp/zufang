@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { removeToken } from './token'
-import {BASE_URL} from './url'
+import {BASE_URL,removeToken,getToken} from './index'
 
 //创建axios实例,设置基础路径
 const Axios = axios.create({
@@ -10,7 +9,7 @@ const Axios = axios.create({
 //此时需要加上请求头authorization
 Axios.interceptors.request.use(config => {
   const {url} = config
-  if(url.startsWith('/user') && !(url.startsWith('/user/registered') || url.startwith('/user/login'))){
+  if(url.startsWith('/user') && !(url.startsWith('/user/registered') || url.startsWith('/user/login'))){
     config.headers.authorization = getToken()
   }
   return config

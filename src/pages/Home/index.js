@@ -1,16 +1,17 @@
 //首页组件
-import React from 'react'
+import React,{lazy} from 'react'
 import { Route } from 'react-router-dom'
 //导入蚂蚁移动组件库的tabbar组件
 import { TabBar } from 'antd-mobile';
-
-//导入home页中的四个组件
-import Profile from '../Profile'
-import Index from '../Index'
-import News from '../News'
-import HouseList from '../HouseList'
 //导入该页面样式
 import './index.css'
+//导入home页中的四个组件
+import Index from '../Index'
+const Profile = lazy(() => import('../Profile'))
+const News = lazy(() => import('../News'))
+const HouseList = lazy(() => import('../HouseList'))
+
+
 
 //tabbaritem的数据,抽成数组
 const TABBARITEM = [

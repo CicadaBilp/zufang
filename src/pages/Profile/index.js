@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import { Link } from 'react-router-dom'
-import { Grid, Button,Modal } from 'antd-mobile'
+import { Grid, Button, Modal } from 'antd-mobile'
 
 import { BASE_URL, isLogin, Axios, getToken, removeToken } from '../../utils'
 
@@ -29,7 +29,7 @@ export default class Profile extends Component {
   state = {
     isLogin: isLogin(),
     //用户信息
-    userInfo: { }
+    userInfo: {}
   }
   //请求获取用户信息的方法
   async getUserInfo() {
@@ -41,7 +41,7 @@ export default class Profile extends Component {
     const { status, body } = res.data
     if (status === 400) {
       this.setState({
-        isLogin:false
+        isLogin: false
       })
     } else if (status === 200) {
       this.setState({
@@ -50,22 +50,24 @@ export default class Profile extends Component {
     }
 
   }
-  logout = ()=>{
-    alert('提示','是否确定退出?',[
-      {text:'取消'},
-      {text:'退出',onPress:async ()=>{
-        //服务器退出
-        await Axios.post('/user/logout')
-        //本地退出
-        removeToken()
-        this.setState({
-          isLogin:false,
-          userInfo:{}
-        })
-      }}
+  logout = () => {
+    alert('提示', '是否确定退出?', [
+      { text: '取消' },
+      {
+        text: '退出', onPress: async () => {
+          //服务器退出
+          await Axios.post('/user/logout')
+          //本地退出
+          removeToken()
+          this.setState({
+            isLogin: false,
+            userInfo: {}
+          })
+        }
+      }
     ])
   }
-  componentDidMount(){
+  componentDidMount() {
     this.getUserInfo()
   }
   render() {

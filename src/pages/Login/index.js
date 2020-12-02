@@ -89,7 +89,12 @@ Login = withFormik({
     const { status, description, body: { token } } = res.data
     if (status === 200) {
       setToken(token)
-      props.history.go(-1)
+      if(props.location.state){
+        //重定向到登录时登录成功要返回之前的路由,可用replace跳转替换掉login的记录
+        props.history.replace(props.location.state.from.pathname)
+      }else{
+        props.history.go(-1)
+      }
     } else {
       Toast.info(description, 2, null, false)
     }

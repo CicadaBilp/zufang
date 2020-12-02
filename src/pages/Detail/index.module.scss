@@ -19,7 +19,18 @@
 }
 .slides {
   height: 252px;
-  
+  :global{
+    a{
+      display: inline-block;
+      width:100%;
+      height:252px
+    }
+    img{
+      width: 100%;
+      height: 100%;
+ 
+    }
+  }
 }
 
 

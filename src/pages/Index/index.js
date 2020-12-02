@@ -3,8 +3,6 @@ import React from 'react'
 import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile'
 //导入路由组件
 import { Link } from 'react-router-dom'
-//导入axios包
-import axios from 'axios'
 //导入页面css样式
 import './index.scss'
 //导入导航图片
@@ -13,9 +11,10 @@ import nav2 from '../../assets/images/nav-2.png'
 import nav3 from '../../assets/images/nav-3.png'
 import nav4 from '../../assets/images/nav-4.png'
 //导入工具中的组件
-import {getCurrentCity,BASE_URL} from '../../utils/index'
+import {getCurrentCity,BASE_URL,Axios} from '../../utils/index'
 //导入搜索框组件
 import SearchHeader from '../../components/SearchHeader'
+
 
 
 
@@ -35,14 +34,14 @@ export default class Index extends React.Component {
 
   //发送请求获取轮播图数据
   async getSwiper() {
-    let res = await axios.get('http://localhost:8080/home/swiper')
+    let res = await Axios.get('/home/swiper')
     //console.log(res)
     //获取数据后更新state,并更新轮播数据加载完成,
     this.setState({ swiper: res.data.body, swiperLoading: false })
   }
   //发请求获取租房小组数据
   async getGroups() {
-    let res = await axios.get('http://localhost:8080/home/groups?area=AREA%7C88cff55c-aaa4-e2e0')
+    let res = await Axios.get('/home/groups?area=AREA%7C88cff55c-aaa4-e2e0')
     //console.log(res);
     this.setState({
       groups: res.data.body
@@ -50,7 +49,7 @@ export default class Index extends React.Component {
   }
   //发请求获取资讯
   async getNews() {
-    let res = await axios.get('http://localhost:8080/home/news?area=AREA%7C88cff55c-aaa4-e2e0')
+    let res = await Axios.get('/home/news?area=AREA%7C88cff55c-aaa4-e2e0')
     //console.log(res);
     this.setState({
       news: res.data.body

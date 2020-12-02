@@ -2,11 +2,10 @@
 import React from 'react'
 //引入Toast组件
 import { Toast } from 'antd-mobile';
-import axios from 'axios'
 //引入本页样式
 import './index.scss'
 //导入获取当前选择城市组件和把选择的城市信息写入本地缓存组件
-import { getCurrentCity,setLocaCity } from '../../utils'
+import { getCurrentCity,setLocaCity ,Axios,BASE_URL} from '../../utils'
 //导入组件库中的两个组件
 import { List, AutoSizer } from 'react-virtualized'
 //导入顶部栏组件
@@ -63,12 +62,12 @@ export default class CityList extends React.Component {
   //获取城市列表数据
   async getCityList() {
     //发请求获取所有城市列表
-    let res = await axios.get('http://localhost:8080/area/city?level=1')
+    let res = await Axios.get('/area/city?level=1')
     //console.log(res)
     //调用处理列表数据的方法
     let { citysObject, indexList } = handleList(res.data.body)
     //其他城市列表处理完后,发送请求获取热门城市数据,将其作为一组,插入上面两个中
-    let hot = await axios.get('http://localhost:8080/area/hot')
+    let hot = await Axios.get('/area/hot')
     indexList.unshift('hot')
     citysObject.hot = hot.data.body
     //console.log(citysObject,indexList);

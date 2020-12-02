@@ -1,11 +1,11 @@
 import React from 'react'
-import { Carousel, Flex } from 'antd-mobile'
+import { Carousel, Flex, Modal, Toast } from 'antd-mobile'
 import NavHeader from '../../components/NavHeader'
 import styles from './index.module.scss'
 
 import HouseItem from '../../components/HouseItem'
 import HousePackage from '../../components/HousePackage'
-import { BASE_URL, Axios } from '../../utils'
+import { BASE_URL, Axios, isLogin } from '../../utils'
 
 
 
@@ -92,17 +92,22 @@ export default class Detail extends React.Component {
       // houseCode: '',
       // 房屋描述
       description: ''
-    }
+    },
+    isFavorite: false
   }
 
   async componentDidMount() {
     let { id } = this.props.match.params
+    this.id = id
     //console.log(id);
+    //根据id发请求获取房屋详情
     let res = await Axios(`/houses/${id}`)
     const { community, coord } = res.data.body
+    //根据返回的信息渲染地图
     this.renderMap(community, coord)
-    console.log(res);
-    //console.log(community, coord);
+    //调用查询房屋是否被收藏
+    this.checkFavorite(id)
+    // 更新房屋数据和加载状态
     this.setState({
       houseInfo: res.data.body,
       isLoading: false
@@ -117,16 +122,10 @@ export default class Detail extends React.Component {
       <a
         key={index}
         href="http://itcast.cn"
-        style={{
-          display: 'inline-block',
-          width: '100%',
-          height: 252
-        }}
       >
         <img
           src={BASE_URL + item}
           alt=""
-          style={{ width: '100%', height: "100%", verticalAlign: 'top' }}
         />
       </a>
     ))
@@ -152,8 +151,84 @@ export default class Detail extends React.Component {
     `)
     map.addOverlay(label)
   }
+  //查询房屋是否收藏过
+  async checkFavorite(id) {
+    if (!isLogin) {
+      return
+    }
+    //当登录后再发送请求查询房屋是否被收藏
+    let res = await Axios.get(`/user/favorites/${id}`)
+    const { status, body } = res.data
+    if (status === 200) {
+      this.setState({
+        isFavorite: body.isFavorite
+      })
+    }
+  }
+  //点击收藏按钮的处理函数
+  handleFavorite = async () => {
+
+    if (!isLogin()) {
+      Modal.alert('提示', '登录后才能收藏房源,是否去登录?', [
+        { text: '取消' },
+        {
+          text: '去登录',
+          onPress: () => {
+            this.props.history.push('/login')
+          }
+        }
+      ])
+    }
+    //如果已登录(本地缓存中存在token值)
+    else {
+      //如果已收藏就发请求删除
+      if (this.state.isFavorite) {
+        let res = await Axios.delete(`/user/favorite/${this.id}`)
+        const { status } = res.data
+        if (status === 200) {
+          //删除成功
+          Toast.info('已取消', 1)
+          this.setState({ isFavorite: false })
+        }
+        else {
+          Modal.alert('提示', '登录失效,是否去登录?', [
+            { text: '取消' },
+            {
+              text: '去登录',
+              onPress: () => {
+                this.props.history.push('/login')
+              }
+            }
+          ])
+          this.setState({ isFavorite: false })
+        }
+      }
+      //如果未收藏,就发请求收藏
+      else {
+        let res = Axios.post(`/user/favorite/${this.id}`)
+        const { status } = res.data
+        if (status === 200) {
+          Toast.info('收藏成功', 1)
+          this.setState({ isFavorite: true })
+        }
+        else {
+          Modal.alert('提示', '登录失效,是否去登录?', [
+            { text: '取消' },
+            {
+              text: '去登录',
+              onPress: () => {
+                this.props.history.push('/login')
+              }
+            }
+          ])
+          this.setState({ isFavorite: false })
+        }
+      }
+    }
+  }
+
   render() {
-    const { isLoading, houseInfo } = this.state
+    const { isLoading, houseInfo, isFavorite } = this.state
     return (
       <div className={styles.root}>
         <NavHeader
@@ -181,8 +256,8 @@ export default class Detail extends React.Component {
           <Flex className={styles.tags}>
             <Flex.Item>
               {
-                houseInfo.tags.map((item,index) => {
-                  let tagClass = index <= 2 ? `tag${index+1}` : `tag${index%2+1}`
+                houseInfo.tags.map((item, index) => {
+                  let tagClass = index <= 2 ? `tag${index + 1}` : `tag${index % 2 + 1}`
                   return (
                     <span className={[styles.tag, styles[tagClass]].join(' ')} key={index}>
                       {item}
@@ -202,11 +277,11 @@ export default class Detail extends React.Component {
               <div>租金</div>
             </Flex.Item>
             <Flex.Item className={styles.infoPriceItem}>
-            <div>{houseInfo.roomType}</div>
+              <div>{houseInfo.roomType}</div>
               <div>房型</div>
             </Flex.Item>
             <Flex.Item className={styles.infoPriceItem}>
-            <div>{houseInfo.size}平米</div>
+              <div>{houseInfo.size}平米</div>
               <div>面积</div>
             </Flex.Item>
           </Flex>
@@ -271,7 +346,7 @@ export default class Detail extends React.Component {
 
             <div className={styles.descText}>
               {/* {description || '暂无房屋描述'} */}
-             {houseInfo.description}
+              {houseInfo.description}
             </div>
           </div>
         </div>
@@ -288,13 +363,26 @@ export default class Detail extends React.Component {
 
         {/* 底部收藏按钮 */}
         <Flex className={styles.fixedBottom}>
-          <Flex.Item>
-            <img
-              src={BASE_URL + '/img/unstar.png'}
-              className={styles.favoriteImg}
-              alt="收藏"
-            />
-            <span className={styles.favorite}>收藏</span>
+          <Flex.Item onClick={this.handleFavorite}>
+            {
+              isFavorite
+                ? <>
+                  <img
+                    src={BASE_URL + '/img/star.png'}
+                    className={styles.favoriteImg}
+                    alt="收藏"
+                  />
+                  <span className={styles.favorite}>已收藏</span>
+                </>
+                : <>
+                  <img
+                    src={BASE_URL + '/img/unstar.png'}
+                    className={styles.favoriteImg}
+                    alt="收藏"
+                  />
+                  <span className={styles.favorite}>收藏</span>
+                </>
+            }
           </Flex.Item>
           <Flex.Item>在线咨询</Flex.Item>
           <Flex.Item>
